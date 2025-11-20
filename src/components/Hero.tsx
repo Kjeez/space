@@ -24,7 +24,10 @@ const WarpBackground: React.FC = () => {
         let wHeight = 0;
         let wStars: WarpStar[] = [];
         let warpCenter = { x: 0, y: 0 };
-        let mouse = { x: -1000, y: -1000 };
+
+        // Input State (Mouse & Touch)
+        // Initialize off-screen so ship doesn't appear until interaction
+        let inputPos = { x: -1000, y: -1000 };
 
         // Spacecraft Physics State
         let shipPos = { x: -100, y: -100 };
@@ -66,7 +69,7 @@ const WarpBackground: React.FC = () => {
 
                 if (this.isPlanet) {
                     // Planet properties
-                    this.size = 4 + Math.random() * 6; // Much larger (4px - 10px)
+                    this.size = 4 + Math.random() * 6; // Much larger
 
                     // Planet colors (Ice, Terran, Desert, Gas Giant)
                     const planetColors = [
@@ -112,7 +115,7 @@ const WarpBackground: React.FC = () => {
                 ctx!.arc(x, y, this.size, 0, Math.PI * 2);
 
                 if (this.isPlanet) {
-                    // Planet rendering: Solid circle with partial opacity
+                    // Planet rendering
                     ctx!.fillStyle = this.color + Math.min(0.9, alpha) + ')';
                     ctx!.fill();
 
@@ -142,18 +145,19 @@ const WarpBackground: React.FC = () => {
             // --- Interaction Logic ---
             const rect = canvas.getBoundingClientRect();
 
+            // Check if input (mouse or touch) is inside the component
             const isInSection =
-                mouse.x >= rect.left &&
-                mouse.x <= rect.right &&
-                mouse.y >= rect.top &&
-                mouse.y <= rect.bottom;
+                inputPos.x >= rect.left &&
+                inputPos.x <= rect.right &&
+                inputPos.y >= rect.top &&
+                inputPos.y <= rect.bottom;
 
             let targetX = wWidth * 0.2;
             let targetY = wHeight * 0.5;
 
             if (isInSection) {
-                const localX = mouse.x - rect.left;
-                const localY = mouse.y - rect.top;
+                const localX = inputPos.x - rect.left;
+                const localY = inputPos.y - rect.top;
 
                 if (!isShipInitialized) {
                     shipPos.x = localX;
@@ -162,27 +166,31 @@ const WarpBackground: React.FC = () => {
                     spacecraft.style.opacity = '1';
                 }
 
+                // Parallax Target (Steering the stars)
                 targetX = localX;
                 targetY = localY;
 
                 // --- Spacecraft Physics ---
                 const targetShipX = localX;
                 const targetShipY = localY;
+
+                // Calculate horizontal velocity for banking
                 const velX = targetShipX - shipPos.x;
 
-                // Smooth Follow
+                // Smooth Follow (Lerp)
                 shipPos.x += (targetShipX - shipPos.x) * 0.15;
                 shipPos.y += (targetShipY - shipPos.y) * 0.15;
 
-                // Banking
+                // Banking: Tilt based on X velocity
                 let targetAngle = velX * 3;
                 targetAngle = Math.max(-30, Math.min(30, targetAngle));
+
+                // Smooth Rotation
                 shipAngle += (targetAngle - shipAngle) * 0.1;
 
-                // Update CSS
-                // Offset to center (32px is half of 64px)
-                // Added perspective and rotateX(40deg) for forward inclination
-                spacecraft.style.transform = `translate(${shipPos.x - 32}px, ${shipPos.y - 32}px) perspective(1000px) rotate(${shipAngle}deg) rotateX(40deg)`;
+                // Update Spacecraft CSS
+                // Offset -32px to center the 64px icon
+                spacecraft.style.transform = `translate(${shipPos.x - 32}px, ${shipPos.y - 32}px) perspective(1000px) rotate(${shipAngle}deg)`;
             } else {
                 isShipInitialized = false;
                 spacecraft.style.opacity = '0';
@@ -192,6 +200,7 @@ const WarpBackground: React.FC = () => {
             warpCenter.x += (targetX - warpCenter.x) * 0.05;
             warpCenter.y += (targetY - warpCenter.y) * 0.05;
 
+            // Draw Stars & Planets
             wStars.forEach((s) => {
                 s.update();
                 s.draw();
@@ -200,54 +209,112 @@ const WarpBackground: React.FC = () => {
             animationFrameId = requestAnimationFrame(animate);
         };
 
+        // --- Event Listeners (Mouse & Touch) ---
         const handleMouseMove = (e: MouseEvent) => {
-            mouse.x = e.clientX;
-            mouse.y = e.clientY;
+            inputPos.x = e.clientX;
+            inputPos.y = e.clientY;
+        };
+
+        const handleTouchMove = (e: TouchEvent) => {
+            // Prevent default only if necessary (might block scrolling)
+            // e.preventDefault(); 
+            if (e.touches.length > 0) {
+                inputPos.x = e.touches[0].clientX;
+                inputPos.y = e.touches[0].clientY;
+            }
+        };
+
+        const handleTouchEnd = () => {
+            // Reset position to hide ship when finger is lifted
+            inputPos.x = -1000;
+            inputPos.y = -1000;
         };
 
         window.addEventListener('mousemove', handleMouseMove);
+        window.addEventListener('touchmove', handleTouchMove, { passive: true });
+        window.addEventListener('touchstart', handleTouchMove, { passive: true }); // Update on initial tap
+        window.addEventListener('touchend', handleTouchEnd);
         window.addEventListener('resize', resize);
+
+        // Initial setup
         resize();
         animate();
 
         return () => {
             window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('touchmove', handleTouchMove);
+            window.removeEventListener('touchstart', handleTouchMove);
+            window.removeEventListener('touchend', handleTouchEnd);
             window.removeEventListener('resize', resize);
             cancelAnimationFrame(animationFrameId);
         };
     }, []);
 
     return (
-        <div ref={containerRef} className="absolute inset-0 w-full h-full bg-black overflow-hidden cursor-none group z-0">
-            <canvas ref={canvasRef} className="absolute inset-0 w-full h-full z-0" />
-            <div ref={spacecraftRef} className="absolute top-0 left-0 pointer-events-none z-50 transition-opacity duration-300 opacity-0 will-change-transform" style={{ width: '64px', height: '64px' }}>
+        <div
+            ref={containerRef}
+            className="absolute inset-0 w-full h-full bg-black overflow-hidden cursor-none group z-0"
+        >
+            {/* Canvas for Starfield */}
+            <canvas
+                ref={canvasRef}
+                className="absolute inset-0 w-full h-full z-0"
+            />
+
+            {/* Spacecraft Cursor Element */}
+            <div
+                ref={spacecraftRef}
+                className="absolute top-0 left-0 pointer-events-none z-50 transition-opacity duration-300 opacity-0 will-change-transform"
+                style={{ width: '64px', height: '64px' }}
+            >
                 {/* High-Fidelity SVG Recreation of the "Blue Interceptor" */}
                 <div className="relative w-full h-full">
                     {/* SVG Layer */}
                     <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-[0_0_15px_rgba(102,252,241,0.6)]" xmlns="http://www.w3.org/2000/svg">
                         <defs>
-                            <filter id="glow"><feGaussianBlur stdDeviation="2.5" result="coloredBlur" /><feMerge><feMergeNode in="coloredBlur" /><feMergeNode in="SourceGraphic" /></feMerge></filter>
+                            <filter id="glow">
+                                <feGaussianBlur stdDeviation="2.5" result="coloredBlur" />
+                                <feMerge>
+                                    <feMergeNode in="coloredBlur" />
+                                    <feMergeNode in="SourceGraphic" />
+                                </feMerge>
+                            </filter>
                         </defs>
-                        {/* Wings */}
+
+                        {/* 1. Main Wings (Forward Swept look) */}
                         <path d="M50 20 L75 45 L90 60 L75 75 L50 65 L25 75 L10 60 L25 45 Z" fill="#0B0C10" stroke="#66FCF1" strokeWidth="1.5" />
-                        {/* Body */}
+
+                        {/* 2. Fuselage / Body */}
                         <path d="M50 10 L62 35 L62 75 L50 85 L38 75 L38 35 Z" fill="#1F2833" stroke="#66FCF1" strokeWidth="1" />
-                        {/* Cockpit */}
+
+                        {/* 3. Cockpit Glass */}
                         <path d="M50 15 L58 30 L58 45 L50 50 L42 45 L42 30 Z" fill="#66FCF1" fillOpacity="0.3" stroke="#66FCF1" strokeWidth="0.5" />
-                        <path d="M50 15 L50 50" stroke="#66FCF1" strokeWidth="0.5" />
-                        {/* Thrusters */}
+                        <path d="M50 15 L50 50" stroke="#66FCF1" strokeWidth="0.5" /> {/* Center strut */}
+
+                        {/* 4. Rear Thrusters (Triple Engine) */}
                         <circle cx="38" cy="75" r="6" fill="#111" stroke="#66FCF1" strokeWidth="1.5" />
                         <circle cx="50" cy="80" r="7" fill="#111" stroke="#66FCF1" strokeWidth="1.5" />
                         <circle cx="62" cy="75" r="6" fill="#111" stroke="#66FCF1" strokeWidth="1.5" />
-                        {/* Glows */}
+
+                        {/* 5. Glow Accents / Panel Lines */}
                         <path d="M25 45 L25 65" stroke="#66FCF1" strokeWidth="1.5" filter="url(#glow)" />
                         <path d="M75 45 L75 65" stroke="#66FCF1" strokeWidth="1.5" filter="url(#glow)" />
                     </svg>
-                    {/* Engines */}
+
+                    {/* CSS-based Engine Plumes (Animated) */}
                     <div className="absolute top-[75%] left-1/2 -translate-x-1/2 w-full flex justify-center items-start gap-1">
-                        <div className="relative -left-3"><div className="w-1.5 h-16 bg-gradient-to-b from-[#66FCF1] to-transparent blur-[2px] opacity-80 animate-pulse"></div></div>
-                        <div className="relative top-1"><div className="w-2 h-20 bg-gradient-to-b from-[#45A29E] via-[#66FCF1] to-transparent blur-[3px] opacity-90"></div></div>
-                        <div className="relative left-3"><div className="w-1.5 h-16 bg-gradient-to-b from-[#66FCF1] to-transparent blur-[2px] opacity-80 animate-pulse"></div></div>
+                        {/* Left Engine */}
+                        <div className="relative -left-3">
+                            <div className="w-1.5 h-16 bg-gradient-to-b from-[#66FCF1] to-transparent blur-[2px] opacity-80 animate-pulse"></div>
+                        </div>
+                        {/* Main Engine */}
+                        <div className="relative top-1">
+                            <div className="w-2 h-20 bg-gradient-to-b from-[#45A29E] via-[#66FCF1] to-transparent blur-[3px] opacity-90"></div>
+                        </div>
+                        {/* Right Engine */}
+                        <div className="relative left-3">
+                            <div className="w-1.5 h-16 bg-gradient-to-b from-[#66FCF1] to-transparent blur-[2px] opacity-80 animate-pulse"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -259,6 +326,7 @@ const WarpBackground: React.FC = () => {
 export default function Hero() {
     return (
         <section className="relative w-full h-screen flex flex-col items-center justify-center px-4 overflow-hidden bg-[#020617]">
+
             {/* Warp Background (Absolute Layer) */}
             <WarpBackground />
 
@@ -293,13 +361,15 @@ export default function Hero() {
             </motion.div>
 
             {/* Main Content */}
-            <div className="relative z-30 max-w-5xl mx-auto text-center">
+            <div className="relative z-30 max-w-5xl mx-auto text-center pointer-events-none">
+                {/* Wrapper is pointer-events-none so clicks pass to background, but inner elements need pointer-events-auto */}
+
                 <motion.div
                     initial={{ scale: 0.9, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ duration: 0.8, ease: "easeOut" }}
                 >
-                    <h1 className="text-5xl md:text-8xl font-extrabold tracking-tighter text-white mb-6 relative drop-shadow-2xl">
+                    <h1 className="text-5xl md:text-8xl font-extrabold tracking-tighter text-white mb-6 relative drop-shadow-2xl pointer-events-auto">
                         <span className="bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-gray-500">
                             WEB ALCHEMY
                         </span>
@@ -310,7 +380,7 @@ export default function Hero() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4, duration: 0.8 }}
-                    className="text-lg md:text-2xl text-gray-400 mb-12 max-w-2xl mx-auto leading-relaxed font-light"
+                    className="text-lg md:text-2xl text-gray-400 mb-12 max-w-2xl mx-auto leading-relaxed font-light pointer-events-auto"
                 >
                     We transform your raw ideas into <span className="text-cyan-400 font-medium glow">Digital Gold</span>.
                     <br className="hidden md:block" />
@@ -321,7 +391,7 @@ export default function Hero() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.6, duration: 0.8 }}
-                    className="flex flex-col sm:flex-row items-center justify-center gap-6"
+                    className="flex flex-col sm:flex-row items-center justify-center gap-6 pointer-events-auto"
                 >
                     {/* Primary CTA */}
                     <button className="group relative px-8 py-4 bg-white text-black font-bold rounded-xl overflow-hidden transition-all hover:scale-105 hover:shadow-[0_0_30px_rgba(255,255,255,0.3)]">
@@ -347,7 +417,7 @@ export default function Hero() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 1.2, duration: 1 }}
-                className="absolute bottom-10 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-3 opacity-50"
+                className="absolute bottom-10 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-3 opacity-50 pointer-events-none"
             >
                 <span className="text-[10px] font-mono text-gray-500 tracking-widest uppercase">Scroll to Explore</span>
                 <div className="w-px h-12 bg-gradient-to-b from-cyan-500/50 to-transparent"></div>
