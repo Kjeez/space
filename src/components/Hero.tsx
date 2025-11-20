@@ -3,7 +3,7 @@
 import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 
-// --- WarpBackground Component (Internal) ---
+// --- WarpBackground Component (Internal - Preserved Exactly) ---
 const WarpBackground: React.FC = () => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const spacecraftRef = useRef<HTMLDivElement>(null);
@@ -26,7 +26,6 @@ const WarpBackground: React.FC = () => {
         let warpCenter = { x: 0, y: 0 };
 
         // Input State (Mouse & Touch)
-        // Initialize off-screen so ship doesn't appear until interaction
         let inputPos = { x: -1000, y: -1000 };
 
         // Spacecraft Physics State
@@ -322,7 +321,7 @@ const WarpBackground: React.FC = () => {
     );
 };
 
-// --- Main Hero Component ---
+// --- Main Hero Component (Updated Content) ---
 export default function Hero() {
     return (
         <section className="relative w-full h-screen flex flex-col items-center justify-center px-4 overflow-hidden bg-[#020617]">
@@ -351,12 +350,12 @@ export default function Hero() {
                 transition={{ delay: 0.5 }}
                 className="absolute top-32 z-30"
             >
-                <div className="px-4 py-1.5 rounded-full border border-cyan-500/30 bg-cyan-950/30 backdrop-blur-md flex items-center gap-3 shadow-[0_0_15px_rgba(6,182,212,0.2)]">
+                <div className="px-4 py-1.5 rounded-full border border-green-500/30 bg-green-950/30 backdrop-blur-md flex items-center gap-3 shadow-[0_0_15px_rgba(34,197,94,0.2)]">
                     <span className="relative flex h-2 w-2">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
                     </span>
-                    <span className="text-[10px] font-mono text-cyan-400 tracking-widest font-bold">SYSTEM ONLINE // READY</span>
+                    <span className="text-[10px] font-mono text-green-400 tracking-widest font-bold uppercase">Accepting New Clients in Delhi NCR</span>
                 </div>
             </motion.div>
 
@@ -369,9 +368,10 @@ export default function Hero() {
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ duration: 0.8, ease: "easeOut" }}
                 >
-                    <h1 className="text-5xl md:text-8xl font-extrabold tracking-tighter text-white mb-6 relative drop-shadow-2xl pointer-events-auto">
-                        <span className="bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-gray-500">
-                            WEB ALCHEMY
+                    <h1 className="text-5xl md:text-5xl font-extrabold tracking-tighter text-white mb-6 relative drop-shadow-2xl pointer-events-auto">
+                        Stop Losing Leads.<br />
+                        <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-cyan-300">
+                            Get a Sales Machine.
                         </span>
                     </h1>
                 </motion.div>
@@ -380,11 +380,11 @@ export default function Hero() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4, duration: 0.8 }}
-                    className="text-lg md:text-2xl text-gray-400 mb-12 max-w-2xl mx-auto leading-relaxed font-light pointer-events-auto"
+                    className="text-lg md:text-xl text-gray-400 mb-12 max-w-2xl mx-auto leading-relaxed font-light pointer-events-auto"
                 >
-                    We transform your raw ideas into <span className="text-cyan-400 font-medium glow">Digital Gold</span>.
+                    We build high-performance websites guaranteed to <strong>2x your leads</strong>.
                     <br className="hidden md:block" />
-                    Websites, Apps, and AI tools that work like magic.
+                    Trusted by 100+ businesses in Delhi NCR.
                 </motion.p>
 
                 <motion.div
@@ -395,9 +395,9 @@ export default function Hero() {
                 >
                     {/* Primary CTA */}
                     <button className="group relative px-8 py-4 bg-white text-black font-bold rounded-xl overflow-hidden transition-all hover:scale-105 hover:shadow-[0_0_30px_rgba(255,255,255,0.3)]">
-                        <div className="absolute inset-0 bg-gradient-to-r from-cyan-300 to-blue-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        <div className="absolute inset-0 bg-gradient-to-r from-orange-400 to-orange-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                         <span className="relative flex items-center gap-2 z-10 group-hover:text-white transition-colors">
-                            Start Your Project
+                            Book Free Strategy Call
                             <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                             </svg>
@@ -406,9 +406,27 @@ export default function Hero() {
 
                     {/* Secondary CTA */}
                     <button className="group px-8 py-4 rounded-xl border border-white/10 bg-white/5 text-white font-medium hover:bg-white/10 backdrop-blur-sm transition-all hover:border-white/30 flex items-center gap-2">
-                        <span>View Portfolio</span>
+                        <span>View Our Work</span>
                         <div className="w-2 h-2 rounded-full bg-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     </button>
+                </motion.div>
+
+                {/* Trust Signals */}
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.8, duration: 0.8 }}
+                    className="mt-12 flex flex-wrap items-center justify-center gap-4 md:gap-8 text-xs md:text-sm font-mono text-gray-500 pointer-events-auto"
+                >
+                    <div className="flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div> 100+ Delhi Clients
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div> 5 Years Experience
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div> 7-Day Turnaround
+                    </div>
                 </motion.div>
             </div>
 
