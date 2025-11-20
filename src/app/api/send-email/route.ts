@@ -2,77 +2,80 @@ import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 
 export async function POST(req: Request) {
-    if (req.method !== 'POST') {
-        return NextResponse.json({ message: 'Method Not Allowed' }, { status: 405 });
-    }
-
-    const { name, email, phone, subject, message, checkInDate, checkOutDate, guests, accommodationType } = await req.json();
-
-    // --- **FIXED LOGIC** ---
-    // We check for the 'subject' field. If it exists, it's the contact form.
-    // Otherwise, it's the booking form.
-    const isContactForm = subject !== undefined;
-
-    const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: process.env.MAIL_USER,
-            pass: process.env.MAIL_PASS,
-        },
-    });
-
-    let mailOptions;
-
-    if (isContactForm) {
-        // --- Handle Contact Form Submission ---
-        if (!name || !email || !subject || !message) {
-            return NextResponse.json({ message: "Missing required contact fields" }, { status: 400 });
-        }
-        mailOptions = {
-            from: process.env.MAIL_USER,
-            replyTo: email,
-            to: "earthenpods@gmail.com, konnectwithkunal@gmail.com",
-            subject: `Contact Form Inquiry: ${subject}`,
-            html: `
-        <h2>New Contact Form Submission</h2>
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Phone:</strong> ${phone || "Not provided"}</p>
-        <p><strong>Subject:</strong> ${subject}</p>
-        <p><strong>Message:</strong></p>
-        <p style="padding-left: 10px; border-left: 3px solid #ccc;">${message.replace(/\n/g, '<br>')}</p>
-      `,
-        };
-    } else {
-        // --- Handle Booking Request Submission ---
-        if (!name || !email || !phone || !checkInDate || !checkOutDate || !guests || !accommodationType) {
-            return NextResponse.json({ message: "Missing required booking fields" }, { status: 400 });
-        }
-        mailOptions = {
-            from: process.env.MAIL_USER,
-            replyTo: email,
-            to: "earthenpods@gmail.com, konnectwithkunal@gmail.com",
-            subject: `New Booking Inquiry from ${name} for ${accommodationType}`,
-            html: `
-        <h2>New Booking Inquiry</h2>
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Email:</strong> <a href="mailto:${email}">${email}</a></p>
-        <p><strong>Phone:</strong> <a href="tel:${phone}">${phone}</a></p>
-        <hr>
-        <h3>Booking Details:</h3>
-        <p><strong>Accommodation Type:</strong> ${accommodationType}</p>
-        <p><strong>Number of Guests:</strong> ${guests}</p>
-        <p><strong>Check-in Date:</strong> ${new Date(checkInDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-        <p><strong>Check-out Date:</strong> ${new Date(checkOutDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-      `,
-        };
-    }
-
     try {
+        const { name, email, phone, budget, services, message } = await req.json();
+
+        // Basic validation
+        if (!name || !email || !message) {
+            return NextResponse.json({ message: "Missing required fields" }, { status: 400 });
+        }
+
+        // Configure Nodemailer with your Gmail details
+        // Make sure you have an 'App Password' generated for your Gmail account
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.MAIL_USER, // Add these to your .env.local file
+                pass: process.env.MAIL_PASS,
+            },
+        });
+
+        // Email Layout
+        const mailOptions = {
+            from: process.env.MAIL_USER,
+            to: "konnectwithkunal@gmail.com", // Where you want to receive the leads
+            replyTo: email,
+            subject: `🚀 New Sales Machine Lead: ${name}`,
+            html: `
+        <div style="font-family: sans-serif; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden;">
+          <div style="background-color: #020617; padding: 20px; color: white; text-align: center;">
+            <h2 style="margin: 0;">New Project Inquiry</h2>
+          </div>
+          
+          <div style="padding: 30px; background-color: #ffffff;">
+            <p style="font-size: 16px; margin-bottom: 20px;">You have received a new lead from your website sales machine.</p>
+            
+            <table style="width: 100%; border-collapse: collapse;">
+              <tr>
+                <td style="padding: 10px; border-bottom: 1px solid #eee; font-weight: bold; width: 120px;">Name:</td>
+                <td style="padding: 10px; border-bottom: 1px solid #eee;">${name}</td>
+              </tr>
+              <tr>
+                <td style="padding: 10px; border-bottom: 1px solid #eee; font-weight: bold;">Email:</td>
+                <td style="padding: 10px; border-bottom: 1px solid #eee;"><a href="mailto:${email}" style="color: #2563eb;">${email}</a></td>
+              </tr>
+              <tr>
+                <td style="padding: 10px; border-bottom: 1px solid #eee; font-weight: bold;">Phone:</td>
+                <td style="padding: 10px; border-bottom: 1px solid #eee;">${phone || 'Not provided'}</td>
+              </tr>
+              <tr>
+                <td style="padding: 10px; border-bottom: 1px solid #eee; font-weight: bold;">Budget:</td>
+                <td style="padding: 10px; border-bottom: 1px solid #eee; color: #059669; font-weight: bold;">${budget}</td>
+              </tr>
+              <tr>
+                <td style="padding: 10px; border-bottom: 1px solid #eee; font-weight: bold;">Interests:</td>
+                <td style="padding: 10px; border-bottom: 1px solid #eee;">${services.join(', ') || 'None selected'}</td>
+              </tr>
+            </table>
+
+            <div style="margin-top: 20px;">
+              <p style="font-weight: bold;">Project Details:</p>
+              <p style="background-color: #f3f4f6; padding: 15px; border-radius: 8px; line-height: 1.5;">${message.replace(/\n/g, '<br>')}</p>
+            </div>
+          </div>
+          
+          <div style="background-color: #f9fafb; padding: 15px; text-align: center; font-size: 12px; color: #6b7280;">
+            Sent via Web Alchemy Contact Form
+          </div>
+        </div>
+      `,
+        };
+
         await transporter.sendMail(mailOptions);
-        return NextResponse.json({ message: "Request sent successfully!" }, { status: 200 });
+
+        return NextResponse.json({ message: "Success" }, { status: 200 });
     } catch (error) {
-        console.error("Email sending error:", error);
-        return NextResponse.json({ message: "Failed to send email." }, { status: 500 });
+        console.error("Email Error:", error);
+        return NextResponse.json({ message: "Failed to send email" }, { status: 500 });
     }
 }
