@@ -5,12 +5,14 @@ import Process from '../components/Process';
 import Projects from '../components/Projects';
 import Contact from '../components/Contact';
 import Footer from '@/components/Footer';
+import Stats from '../components/Stats';
 
 export default function Home() {
   return (
     <main className="bg-[#020617] min-h-screen text-white">
       <Header />
       <WarpBackground />
+      <Stats />
       <Services />
       <Process />
       <Projects />

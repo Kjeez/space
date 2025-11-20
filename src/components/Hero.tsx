@@ -348,7 +348,7 @@ export default function Hero() {
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
-                className="absolute top-32 z-30"
+                className="absolute top-28 md:top-32 z-30"
             >
                 <div className="px-4 py-1.5 rounded-full border border-green-500/30 bg-green-950/30 backdrop-blur-md flex items-center gap-3 shadow-[0_0_15px_rgba(34,197,94,0.2)]">
                     <span className="relative flex h-2 w-2">

@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
-import { motion, useScroll, useTransform, useMotionTemplate, useMotionValue } from 'framer-motion';
+import React, { useRef } from 'react';
+import { motion, useMotionTemplate, useMotionValue } from 'framer-motion';
 
 // --- Types ---
 interface Project {
@@ -10,7 +10,7 @@ interface Project {
     category: string;
     description: string;
     tags: string[];
-    image: string; // Using CSS gradients/colors for demo, can replace with URLs
+    image: string;
     link: string;
     color: string;
 }
@@ -18,30 +18,30 @@ interface Project {
 const projects: Project[] = [
     {
         id: '01',
-        title: 'NEURAL_NEXUS',
-        category: 'AI Platform',
-        description: 'A decentralized neural network visualizer handling 1M+ nodes in real-time.',
-        tags: ['React', 'Three.js', 'WebGL'],
+        title: 'Real Estate Leads',
+        category: 'Lead Gen',
+        description: 'A high-converting landing page for a Gurgaon luxury property developer that increased site visits by 150%.',
+        tags: ['Next.js', 'PPC', 'Lead Forms'],
         image: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
         link: '#',
         color: '#66FCF1', // Cyan
     },
     {
         id: '02',
-        title: 'ORBITAL_FINANCE',
-        category: 'Fintech Dashboard',
-        description: 'High-frequency trading interface with sub-millisecond data updates.',
-        tags: ['Next.js', 'WebSocket', 'D3.js'],
+        title: 'E-com Sales Engine',
+        category: 'E-commerce',
+        description: 'A direct-to-consumer storefront for a Delhi fashion brand, optimized for mobile shopping and fast checkout.',
+        tags: ['Shopify', 'CRO', 'Analytics'],
         image: 'linear-gradient(135deg, #0f172a 0%, #334155 100%)',
         link: '#',
         color: '#FFD700', // Gold
     },
     {
         id: '03',
-        title: 'AETHER_COMMERCE',
-        category: 'E-commerce',
-        description: 'Immersive 3D shopping experience with AR product preview capabilities.',
-        tags: ['Shopify', 'React Fiber', 'ARKit'],
+        title: 'B2B Service Portal',
+        category: 'Web App',
+        description: 'A professional service platform for a Noida-based consultancy, featuring automated booking and CRM integration.',
+        tags: ['React', 'Automations', 'SEO'],
         image: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
         link: '#',
         color: '#45A29E', // Slate/Teal
@@ -141,7 +141,7 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
 
                     <div className="mt-8 pt-8 border-t border-white/5 flex items-center justify-between">
                         <button className="flex items-center gap-2 text-sm font-bold text-white group-hover:gap-4 transition-all duration-300">
-                            VIEW CASE STUDY <span style={{ color: project.color }}>→</span>
+                            VIEW RESULTS <span style={{ color: project.color }}>→</span>
                         </button>
 
                         {/* Project visual indicator color */}
@@ -173,15 +173,15 @@ const Projects: React.FC = () => {
                     <div>
                         <div className="flex items-center gap-2 mb-4">
                             <div className="w-2 h-2 bg-[#66FCF1] rounded-full animate-pulse"></div>
-                            <span className="text-[#66FCF1] font-mono text-sm tracking-widest">DEPLOYED_ARTIFACTS</span>
+                            <span className="text-[#66FCF1] font-mono text-sm tracking-widest">FEATURED WORK</span>
                         </div>
                         <h2 className="text-4xl md:text-6xl font-bold text-white tracking-tight">
-                            Featured <span className="text-gray-600">Works</span>
+                            Recent <span className="text-gray-600">Success</span>
                         </h2>
                     </div>
 
                     <p className="text-gray-400 max-w-md text-right hidden md:block leading-relaxed">
-                        A curated selection of digital products transmuted from pure concept into reality.
+                        Real results for real businesses in Delhi.
                     </p>
                 </motion.div>
 
@@ -201,7 +201,7 @@ const Projects: React.FC = () => {
                     className="mt-20 text-center"
                 >
                     <a href="#" className="inline-flex items-center gap-3 text-gray-500 hover:text-white transition-colors font-mono text-sm group">
-                        <span>// VIEW_FULL_ARCHIVE</span>
+                        <span>// VIEW FULL PORTFOLIO</span>
                         <div className="h-px w-12 bg-gray-700 group-hover:bg-white transition-colors"></div>
                     </a>
                 </motion.div>
