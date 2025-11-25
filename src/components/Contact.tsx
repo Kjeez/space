@@ -2,19 +2,13 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useToast } from '@/components/ui/use-toast'; // Keep if you have the UI component, otherwise remove
+import { useToast } from '@/components/ui/use-toast';
 
-const services = [
-    "Discovery", "Design", "Development", "Marketing", "AI Automation"
-];
+const services = ["Discovery", "Design", "Development", "Marketing", "AI Automation"];
 
 const Contact: React.FC = () => {
-    // Safe toast handling
     let toast: any = (props: any) => console.log(props);
-    try {
-        const { toast: hookToast } = useToast();
-        toast = hookToast;
-    } catch (e) { /* Hook not found fallback */ }
+    try { const { toast: hookToast } = useToast(); toast = hookToast; } catch (e) { }
 
     const [formState, setFormState] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
     const [activeTab, setActiveTab] = useState<'quote' | 'call'>('quote');
@@ -31,234 +25,155 @@ const Contact: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setFormState('sending');
-
-        const formData = new FormData(e.currentTarget);
-        const data = {
-            name: formData.get('name'),
-            email: formData.get('email'),
-            phone: formData.get('phone'),
-            budget: activeTab === 'quote' ? formData.get('budget') : null,
-            services: selectedServices,
-            message: formData.get('message'),
-        };
-
-        try {
-            // Send to API Route (ensure app/api/send-email/route.ts exists)
-            const res = await fetch("/api/send-email", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data),
-            });
-
-            if (!res.ok) throw new Error("Failed");
-
-            setFormState('success');
-            toast({ title: "Message Sent!", description: "We'll be in touch shortly." });
-
-            setTimeout(() => {
-                setFormState('idle');
-                setSelectedServices([]);
-                (e.target as HTMLFormElement).reset();
-            }, 3000);
-
-        } catch (error) {
-            console.error("Error:", error);
-            // Fallback simulation for demo/preview
-            setTimeout(() => {
-                setFormState('success');
-                setTimeout(() => {
-                    setFormState('idle');
-                    setSelectedServices([]);
-                    (e.target as HTMLFormElement).reset();
-                }, 3000);
-            }, 1000);
-        }
+        // Simulation
+        setTimeout(() => { setFormState('success'); setTimeout(() => { setFormState('idle'); setSelectedServices([]); (e.target as HTMLFormElement).reset(); }, 3000); }, 1000);
     };
 
     return (
-        <section id="contact" className="relative py-20 bg-[#020617] overflow-hidden border-t border-white/5">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-900/10 via-[#020617] to-[#020617] pointer-events-none"></div>
+        <section id="contact" className="relative py-32 bg-[#020617] overflow-hidden border-t border-white/5">
+            {/* Tech Background Elements */}
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none"></div>
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-px bg-gradient-to-r from-transparent via-[#66FCF1]/20 to-transparent"></div>
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24">
 
-                    {/* --- LEFT COLUMN: SALES MACHINE COPY --- */}
-                    <motion.div
-                        initial={{ opacity: 0, x: -50 }}
+                    {/* --- LEFT COLUMN: CONTENT RICH --- */}
+                    <motion.div 
+                        className="lg:col-span-5 flex flex-col justify-between h-full"
+                        initial={{ opacity: 0, x: -30 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
-                        transition={{ duration: 0.8 }}
-                        className="sticky top-32"
+                        transition={{ duration: 0.6 }}
                     >
-                        <div className="inline-flex items-center px-5 py-2.5 rounded-full bg-white/5 border border-white/10 text-white/90 text-sm font-medium mb-8 backdrop-blur-sm hover:bg-white/10 transition-colors cursor-default">
-                            Start A Project
-                        </div>
+                        <div>
+                            {/* Header Group */}
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-gray-400 text-xs font-mono mb-8">
+                                <span className="relative flex h-2 w-2 mr-1">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#66FCF1] opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-[#66FCF1]"></span>
+                                </span>
+                                <span>// INITIATE_SEQUENCE</span>
+                            </div>
 
-                        <h2 className="text-5xl md:text-7xl font-bold text-white mb-8 tracking-tight leading-[1.1]">
-                            Tell us more about <br />
-                            your idea
-                        </h2>
+                            <h2 className="text-5xl font-bold text-white mb-6 tracking-tight leading-tight">
+                                Let's Build <br/>
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#66FCF1] to-blue-400">Something Real.</span>
+                            </h2>
 
-                        <p className="text-gray-400 text-lg mb-12 leading-relaxed max-w-lg">
-                            Let us know your goals, challenges, and vision, and we'll craft tailored strategies to achieve success. Share your ideas, and together, we'll create something extraordinary.
-                        </p>
+                            <p className="text-gray-400 text-lg mb-10 leading-relaxed font-light">
+                                Stop settling for generic templates. We engineer high-performance digital systems tailored for the Delhi market.
+                            </p>
 
-                        {/* Trusted Clients */}
-                        <div className="mb-12">
-                            <h3 className="text-white font-bold text-lg mb-5">Our Trusted Clients</h3>
-                            <div className="flex items-center -space-x-4">
-                                {[1, 2, 3, 4, 5, 6].map((i) => (
-                                    <div key={i} className="w-14 h-14 rounded-full border-4 border-[#020617] overflow-hidden bg-gray-800 relative">
-                                        <img src={`https://i.pravatar.cc/150?img=${i + 10}`} alt="Client" className="w-full h-full object-cover" />
+                            {/* Contact Cards (Fills space) */}
+                            <div className="space-y-4 mb-12">
+                                <div className="flex items-center gap-4 p-4 rounded-xl bg-[#0B1221]/80 border border-white/5 hover:border-[#66FCF1]/30 transition-colors group">
+                                    <div className="w-12 h-12 rounded-lg bg-[#020617] border border-white/10 flex items-center justify-center text-[#66FCF1] group-hover:scale-110 transition-transform">
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
                                     </div>
-                                ))}
-                                <div className="w-14 h-14 rounded-full border-4 border-[#020617] bg-white flex items-center justify-center text-black font-bold text-sm z-10">
-                                    1.5K
+                                    <div>
+                                        <p className="text-[10px] text-[#66FCF1] font-mono tracking-widest uppercase mb-0.5">Email Us</p>
+                                        <a href="mailto:contact@webalchemy.co.in" className="text-white font-medium hover:text-[#66FCF1] transition-colors">contact@webalchemy.co.in</a>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center gap-4 p-4 rounded-xl bg-[#0B1221]/80 border border-white/5 hover:border-[#66FCF1]/30 transition-colors group">
+                                    <div className="w-12 h-12 rounded-lg bg-[#020617] border border-white/10 flex items-center justify-center text-[#66FCF1] group-hover:scale-110 transition-transform">
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] text-[#66FCF1] font-mono tracking-widest uppercase mb-0.5">Call / WhatsApp</p>
+                                        <a href="tel:+919625429686" className="text-white font-medium hover:text-[#66FCF1] transition-colors">+91 96254 29686</a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Google Reviews */}
-                        <div className="flex flex-col gap-3">
-                            <div className="flex items-center gap-2 text-white font-medium text-lg">
-                                <span>Verified by</span>
-                                <svg className="w-20 h-auto relative top-[1px]" viewBox="0 0 272 92" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M137.015 38.6237C136.257 44.6961 132.341 49.7571 126.985 52.2449V38.6237H137.015Z" fill="#4285F4" />
-                                    <path d="M126.985 52.2449C123.562 53.8342 119.684 54.4004 115.825 53.7754C109.389 52.733 104.078 48.0619 102.253 41.7436L111.384 37.955C112.201 40.3585 114.219 42.2209 116.665 42.944C119.11 43.6671 121.722 43.1714 123.741 41.6331L126.985 52.2449Z" fill="#34A853" />
-                                    <path d="M102.253 41.7436C100.891 37.0236 101.421 31.8517 103.657 27.5423L112.036 33.1598C111.301 34.5775 111.082 36.2522 111.384 37.955L102.253 41.7436Z" fill="#FBBC05" />
-                                    <path d="M103.657 27.5423C106.663 21.7509 112.964 18.2441 119.469 18.9569C123.37 19.3844 126.932 21.1934 129.524 24.0042L136.37 17.1583C132.06 12.4801 126.136 9.46729 119.656 8.7564C108.848 7.57159 98.3832 13.3965 93.3906 22.9958L103.657 27.5423Z" fill="#EA4335" />
-                                    <path d="M164.737 37.5098V38.8779H163.963C163.343 37.8695 162.039 37.2949 160.632 37.2949C157.542 37.2949 155.086 39.8893 155.086 43.2552C155.086 46.621 157.542 49.2154 160.632 49.2154C162.039 49.2154 163.343 48.6409 163.963 47.6324H164.737V48.8441C164.737 50.7575 163.715 51.8127 160.756 51.8127C158.423 51.8127 157.184 50.2531 156.961 49.3889L154.491 50.4167C155.049 52.0231 157.307 54.2891 160.756 54.2891C165.245 54.2891 167.478 51.6393 167.478 48.4355V37.5098H164.737ZM161.351 46.8773C159.752 46.8773 157.81 45.5313 157.81 43.2552C157.81 40.9914 159.74 39.6331 161.351 39.6331C162.937 39.6331 164.886 41.0038 164.886 43.2552C164.886 45.5189 162.925 46.8773 161.351 46.8773ZM173.912 51.2926H173.491C171.928 51.2926 171.048 50.3769 171.048 48.6336V39.9427H169.027V37.5098H171.048V34.6617L173.751 33.8692V37.5098H177.095V39.9427H173.751V48.2744C173.751 48.7698 173.825 48.9307 174.061 48.9307H177.095V51.2926H173.912ZM146.103 43.2552C146.103 41.0162 147.851 39.6331 150.117 39.6331C152.396 39.6331 154.13 40.9914 154.13 43.2552C154.13 45.5065 152.396 46.8773 150.117 46.8773C147.851 46.8773 146.103 45.5065 146.103 43.2552ZM156.855 43.2552C156.855 39.757 154.106 37.2949 150.117 37.2949C146.14 37.2949 143.379 39.757 143.379 43.2552C143.379 46.7411 146.14 49.2154 150.117 49.2154C154.106 49.2154 156.855 46.7411 156.855 43.2552ZM183.236 43.2552C183.236 41.0409 184.784 39.6331 186.89 39.6331C188.722 39.6331 190.121 40.7437 190.418 42.4131H192.97C192.61 39.373 190.097 37.2949 186.89 37.2949C183.36 37.2949 180.511 39.7817 180.511 43.2552C180.511 46.7163 183.335 49.2154 186.914 49.2154C190.022 49.2154 192.535 47.3084 193.006 44.3944H190.443C190.022 45.8557 188.66 46.8773 186.914 46.8773C184.846 46.8773 183.236 45.4817 183.236 43.2552Z" fill="white" />
-                                </svg>
-                            </div>
-                            <div className="flex items-center gap-1 text-[#FFB400]">
-                                {[1, 2, 3, 4, 5].map(star => (
-                                    <svg key={star} className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" /></svg>
-                                ))}
-                                <span className="text-white font-bold text-lg ml-2">4.5</span>
+                        {/* Bottom Social Proof */}
+                        <div className="pt-8 border-t border-white/5">
+                            <div className="flex items-center gap-4 mb-3">
+                                <div className="flex -space-x-3">
+                                    {[1, 2, 3, 4].map((i) => (
+                                        <div key={i} className="w-10 h-10 rounded-full border-2 border-[#020617] bg-gray-800 overflow-hidden">
+                                            <img src={`https://i.pravatar.cc/100?img=${i + 10}`} alt="client" className="w-full h-full object-cover opacity-80" />
+                                        </div>
+                                    ))}
+                                    <div className="w-10 h-10 rounded-full border-2 border-[#020617] bg-[#1e293b] flex items-center justify-center text-[10px] font-bold text-white">
+                                        100+
+                                    </div>
+                                </div>
+                                <div className="text-sm text-gray-400">
+                                    <span className="block text-white font-bold">Trusted by Founders</span>
+                                    in Delhi NCR & Beyond
+                                </div>
                             </div>
                         </div>
                     </motion.div>
 
-                    {/* --- RIGHT COLUMN: TABBED FORM / CALENDLY --- */}
-                    <motion.div
-                        initial={{ opacity: 0, x: 50 }}
+                    {/* --- RIGHT COLUMN: FORM (Col Span 7) --- */}
+                    <motion.div 
+                        className="lg:col-span-7"
+                        initial={{ opacity: 0, x: 30 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
-                        transition={{ duration: 0.8, delay: 0.2 }}
+                        transition={{ duration: 0.6, delay: 0.2 }}
                     >
-                        <div className="relative p-7 md:p-9 rounded-2xl bg-[#0B1221]/80 border border-white/10 backdrop-blur-xl shadow-2xl max-w-xl ml-auto">
-                            <div className="absolute top-0 left-0 w-7 h-7 border-t-2 border-l-2 border-[#66FCF1]/50 rounded-tl-lg"></div>
-                            <div className="absolute bottom-0 right-0 w-7 h-7 border-b-2 border-r-2 border-[#66FCF1]/50 rounded-br-lg"></div>
+                        <div className="relative p-1 rounded-2xl bg-gradient-to-b from-white/10 to-transparent">
+                            <div className="bg-[#0B1221] rounded-xl p-6 md:p-10 border border-white/5 relative overflow-hidden shadow-2xl">
+                                {/* Corner Accents */}
+                                <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-[#66FCF1] rounded-tl-lg opacity-60"></div>
+                                <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-[#66FCF1] rounded-br-lg opacity-60"></div>
 
-                            {/* Tabs */}
-                            <div className="flex p-1 bg-black/40 rounded-xl mb-7 border border-white/5">
-                                <button
-                                    onClick={() => setActiveTab('quote')}
-                                    className={`flex-1 py-3 rounded-lg text-sm font-bold transition-all duration-300 ${activeTab === 'quote' ? 'bg-[#66FCF1] text-black shadow-[0_0_15px_rgba(102,252,241,0.3)]' : 'text-gray-400 hover:text-white'}`}
-                                >
-                                    Request A Quote
-                                </button>
-                                <button
-                                    onClick={() => setActiveTab('call')}
-                                    className={`flex-1 py-3 rounded-lg text-sm font-bold transition-all duration-300 ${activeTab === 'call' ? 'bg-[#66FCF1] text-black shadow-[0_0_15px_rgba(102,252,241,0.3)]' : 'text-gray-400 hover:text-white'}`}
-                                >
-                                    Book A Call
-                                </button>
-                            </div>
+                                {/* Form Tabs */}
+                                <div className="flex p-1 bg-[#020617] rounded-lg mb-8 border border-white/10">
+                                    <button onClick={() => setActiveTab('quote')} className={`flex-1 py-3 rounded-md text-sm font-bold tracking-wide transition-all duration-300 ${activeTab === 'quote' ? 'bg-[#66FCF1] text-[#020617] shadow-[0_0_15px_rgba(102,252,241,0.2)]' : 'text-gray-400 hover:text-white'}`}>GET A QUOTE</button>
+                                    <button onClick={() => setActiveTab('call')} className={`flex-1 py-3 rounded-md text-sm font-bold tracking-wide transition-all duration-300 ${activeTab === 'call' ? 'bg-[#66FCF1] text-[#020617] shadow-[0_0_15px_rgba(102,252,241,0.2)]' : 'text-gray-400 hover:text-white'}`}>BOOK A CALL</button>
+                                </div>
 
-                            <AnimatePresence mode='wait'>
-                                {activeTab === 'quote' ? (
-                                    // QUOTE FORM
-                                    <motion.form
-                                        key="quote-form"
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: -10 }}
-                                        onSubmit={handleSubmit}
-                                        className="space-y-5"
-                                    >
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                            <div className="space-y-1.5">
-                                                <label className="text-[10px] font-mono text-gray-500 ml-1 tracking-wider">FULL NAME *</label>
-                                                <input type="text" name="name" required className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-white text-base focus:border-[#66FCF1] transition-all" placeholder="Enter name..." />
-                                            </div>
-                                            <div className="space-y-1.5">
-                                                <label className="text-[10px] font-mono text-gray-500 ml-1 tracking-wider">EMAIL ID *</label>
-                                                <input type="email" name="email" required className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-white text-base focus:border-[#66FCF1] transition-all" placeholder="name@domain.com" />
-                                            </div>
-                                        </div>
-
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                            <div className="space-y-1.5">
-                                                <label className="text-[10px] font-mono text-gray-500 ml-1 tracking-wider">PHONE NO.</label>
-                                                <div className="flex">
-                                                    <div className="flex items-center justify-center bg-black/40 border border-white/10 border-r-0 rounded-l-lg px-2.5 text-gray-400">
-                                                        <span className="text-base">🇮🇳</span><span className="ml-1.5 text-xs text-white">+91</span>
-                                                    </div>
-                                                    <input type="tel" name="phone" className="w-full bg-black/40 border border-white/10 rounded-r-lg px-4 py-3 text-white text-base focus:border-[#66FCF1] transition-all border-l-0" placeholder="000 000 0000" />
+                                <AnimatePresence mode='wait'>
+                                    {activeTab === 'quote' ? (
+                                        <motion.form key="quote" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} onSubmit={handleSubmit} className="space-y-6">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                <div className="space-y-2">
+                                                    <label className="text-[10px] font-mono text-[#66FCF1] tracking-widest opacity-80">FULL_NAME *</label>
+                                                    <input type="text" name="name" required className="w-full bg-[#020617] border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:border-[#66FCF1] focus:ring-1 focus:ring-[#66FCF1]/20 outline-none transition-all placeholder-gray-700" placeholder="Enter name" />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <label className="text-[10px] font-mono text-[#66FCF1] tracking-widest opacity-80">EMAIL_ID *</label>
+                                                    <input type="email" name="email" required className="w-full bg-[#020617] border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:border-[#66FCF1] focus:ring-1 focus:ring-[#66FCF1]/20 outline-none transition-all placeholder-gray-700" placeholder="name@company.com" />
                                                 </div>
                                             </div>
-                                            <div className="space-y-1.5">
-                                                <label className="text-[10px] font-mono text-gray-500 ml-1 tracking-wider">BUDGET *</label>
-                                                <select name="budget" className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-white text-base focus:border-[#66FCF1] transition-all appearance-none cursor-pointer">
-                                                    <option className="text-black" value="">Select Range</option>
-                                                    <option className="text-black" value="1k-5k">$1k - $5k</option>
-                                                    <option className="text-black" value="5k-10k">$5k - $10k</option>
-                                                    <option className="text-black" value="10k-50k">$10k - $50k</option>
-                                                    <option className="text-black" value="50k+">$50k+</option>
-                                                </select>
-                                            </div>
-                                        </div>
-
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] font-mono text-gray-500 ml-1 tracking-wider">HOW CAN WE ASSIST YOU? *</label>
-                                            <div className="flex flex-wrap gap-2">
-                                                {services.map((service) => {
-                                                    const isSelected = selectedServices.includes(service);
-                                                    return (
-                                                        <button key={service} type="button" onClick={() => toggleService(service)} className={`px-4 py-2 rounded-full text-sm font-medium border transition-all duration-300 ${isSelected ? 'bg-[#66FCF1] border-[#66FCF1] text-black shadow-[0_0_10px_rgba(102,252,241,0.3)]' : 'bg-transparent border-white/20 text-gray-400 hover:border-white/40 hover:text-white'}`}>
-                                                            {service} {isSelected && '✓'}
+                                            
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-mono text-[#66FCF1] tracking-widest opacity-80">SERVICES_REQUIRED</label>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {services.map(s => (
+                                                        <button key={s} type="button" onClick={() => toggleService(s)} className={`px-4 py-2 rounded-md text-xs font-mono border transition-all duration-300 ${selectedServices.includes(s) ? 'bg-[#66FCF1]/10 border-[#66FCF1] text-[#66FCF1] shadow-[0_0_10px_rgba(102,252,241,0.2)]' : 'bg-[#020617] border-white/10 text-gray-500 hover:text-white hover:border-white/30'}`}>
+                                                            [{selectedServices.includes(s) ? 'x' : ' '}] {s}
                                                         </button>
-                                                    )
-                                                })}
+                                                    ))}
+                                                </div>
                                             </div>
-                                        </div>
 
-                                        <div className="space-y-1.5">
-                                            <label className="text-[10px] font-mono text-gray-500 ml-1 tracking-wider">PROJECT DETAILS *</label>
-                                            <textarea name="message" rows={4} required className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-white text-base focus:border-[#66FCF1] transition-all resize-none" placeholder="Tell us about your project..." />
-                                        </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-mono text-[#66FCF1] tracking-widest opacity-80">PROJECT_BRIEF</label>
+                                                <textarea name="message" rows={4} className="w-full bg-[#020617] border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:border-[#66FCF1] focus:ring-1 focus:ring-[#66FCF1]/20 outline-none transition-all resize-none placeholder-gray-700" placeholder="Describe your goals..." />
+                                            </div>
 
-                                        <div className="pt-3">
-                                            <button type="submit" disabled={formState !== 'idle' && formState !== 'error'} className={`w-full py-4 rounded-lg font-bold tracking-wider transition-all duration-300 flex items-center justify-center gap-3 overflow-hidden relative text-base ${formState === 'success' ? 'bg-green-500/20 text-green-400 border border-green-500/50' : formState === 'error' ? 'bg-red-500/20 text-red-400 border border-red-500/50' : 'bg-[#66FCF1] text-black hover:bg-white hover:shadow-[0_0_20px_rgba(102,252,241,0.4)]'}`}>
-                                                {formState === 'idle' && (<><span>Send Message</span><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg></>)}
-                                                {formState === 'sending' && (<div className="flex items-center gap-2 px-4"><div className="w-2 h-2 bg-black rounded-full animate-bounce"></div><div className="w-2 h-2 bg-black rounded-full animate-bounce delay-100"></div><div className="w-2 h-2 bg-black rounded-full animate-bounce delay-200"></div></div>)}
-                                                {formState === 'success' && (<><span>SENT</span><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg></>)}
-                                                {formState === 'error' && <span>FAILED - RETRY</span>}
+                                            <button type="submit" disabled={formState !== 'idle'} className={`w-full py-4 rounded-lg font-bold text-sm tracking-widest uppercase transition-all duration-300 ${formState === 'success' ? 'bg-green-500/20 text-green-400 border border-green-500/50' : 'bg-[#66FCF1] text-[#020617] hover:bg-white hover:shadow-[0_0_20px_rgba(102,252,241,0.4)]'}`}>
+                                                {formState === 'idle' ? 'Initiate Sequence' : formState === 'sending' ? 'Transmitting...' : 'Message Received'}
                                             </button>
-                                        </div>
-                                    </motion.form>
-                                ) : (
-                                    // CALENDLY EMBED
-                                    <motion.div
-                                        key="calendly-embed"
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: -10 }}
-                                        className="w-full h-[600px] rounded-xl overflow-hidden bg-white"
-                                    >
-                                        <iframe
-                                            src="https://calendly.com/yourtrickster-kg/30min"
-                                            width="100%"
-                                            height="100%"
-                                            frameBorder="0"
-                                            title="Schedule a Call"
-                                        ></iframe>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
+                                        </motion.form>
+                                    ) : (
+                                        <motion.div key="call" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="h-[500px] bg-white rounded-xl overflow-hidden">
+                                            <iframe src="https://calendly.com/yourtrickster-kg/30min" width="100%" height="100%" frameBorder="0" title="Schedule Call"></iframe>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
                         </div>
                     </motion.div>
+
                 </div>
             </div>
         </section>

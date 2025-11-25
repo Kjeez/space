@@ -83,6 +83,26 @@ const Header: React.FC = () => {
 
     return (
         <>
+            {/* --- SEO Schema Markup (Hidden) --- */}
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify({
+                        "@context": "https://schema.org",
+                        "@type": "LocalBusiness",
+                        "name": "Webalchemy",
+                        "url": "https://www.webalchemy.in/",
+                        "telephone": "+919625429686",
+                        "address": {
+                            "@type": "PostalAddress",
+                            "addressLocality": "New Delhi",
+                            "addressRegion": "Delhi",
+                            "addressCountry": "IN"
+                        }
+                    })
+                }}
+            />
+
             <motion.header
                 initial={{ y: -100, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
@@ -200,7 +220,7 @@ const Header: React.FC = () => {
                 )}
             </AnimatePresence>
 
-            {/* Mobile Navigation Overlay (Unchanged) */}
+            {/* Mobile Navigation Overlay */}
             <AnimatePresence>
                 {isMobileMenuOpen && (
                     <motion.div
@@ -210,7 +230,6 @@ const Header: React.FC = () => {
                         transition={{ duration: 0.3 }}
                         className="fixed inset-0 z-40 bg-[#020617]/95 flex flex-col md:hidden overflow-y-auto pt-24"
                     >
-                        {/* Mobile menu content same as before... */}
                         <div className="flex flex-col w-full max-w-md mx-auto px-6 relative z-10">
                             <nav className="flex flex-col gap-6 mb-8">
                                 {navItems.map((item, i) => (
